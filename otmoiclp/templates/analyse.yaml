@@ -1,0 +1,73 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: check-business-status
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: "0,5,10,15,20,25,30,35,40,45,50,55 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: check-business-status
+            image: kldtks/edge:otmoic-lpnode-analyse-latest
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: obridge-lpnode-db-redis
+                  key: redis-password
+            - name: MONGODB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: obridge-lpnode-db-mongodb
+                  key: mongodb-root-password
+            - name: REDIS_HOST
+              value: obridge-lpnode-db-redis-master
+            - name: MONGODB_HOST
+              value: obridge-lpnode-db-mongodb
+            command:
+            - /bin/sh
+            - -c
+            - date; node job-check-business-status.js
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: move-business-history
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: "1,6,11,16,21,26,31,36,41,46,51,56 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: move-business-history
+            image: kldtks/edge:lpnode-analyse-5f5d3346
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: obridge-lpnode-db-redis
+                  key: redis-password
+            - name: MONGODB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: obridge-lpnode-db-mongodb
+                  key: mongodb-root-password
+            - name: REDIS_HOST
+              value: obridge-lpnode-db-redis-master
+            - name: MONGODB_HOST
+              value: obridge-lpnode-db-mongodb
+            command:
+            - /bin/sh
+            - -c
+            - date; node job-succeed-business-move.js
+          restartPolicy: OnFailure
