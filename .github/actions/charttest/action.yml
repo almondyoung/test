@@ -15,6 +15,7 @@ runs:
 
     - name: build chart-valid
       run: |
+        echo ${{ inputs.chart-dirs }}
         echo $pwd
         cd ./.github/actions/charttest
         go mod tidy

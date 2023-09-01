@@ -50,7 +50,7 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         uses: ./.github/actions/charttest
         with:
-          chart-dirs: ${{ steps.list-changed.outputs.CHANGED_FILES }}"
+          chart-dirs: ${{ steps.list-changed.outputs.CHANGED_FILES }}
 
       - name: Run chart-testing (valid)
         if: steps.list-changed.outputs.changed == 'true'
