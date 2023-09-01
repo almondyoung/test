@@ -1,3 +1,4 @@
+name: 'a test'
 on:
   workflow_dispatch:
   push:
