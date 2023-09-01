@@ -23,7 +23,7 @@ runs:
       shell: bash
     - name: build image
       run: |
-        docker image build -t ${{ inputs.docker_hub_user }}/${{ inputs.image_Name }}
+        docker image build -t ${{ inputs.docker_hub_user }}/${{ inputs.image_Name }} .
       shell: bash
     - name : push image
       run: |
