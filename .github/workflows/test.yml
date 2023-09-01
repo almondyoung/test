@@ -53,16 +53,6 @@ jobs:
         with:
           chart-dirs: ${{ steps.list-changed.outputs.CHANGED_FILES }}
 
-      - name: check chart-testing (valid) result
-        run: |
-          echo ${{ steps.chart-testing-valid.outputs.random-test-result }}
-          if [[ ${{ steps.chart-testing-valid.outputs.random-test-result }} == *"successful"* ]]; then
-            echo "successful"
-          else
-            echo "failed"
-            exit 1
-        shell: bash
-
       - name: Run chart-testing (valid)
         if: steps.list-changed.outputs.changed == 'true'
         run: |
@@ -85,5 +75,14 @@ jobs:
               repo: context.repo.repo,
               body: "${{ steps.chart-testing-valid.outputs.random-test-result }}"
             })
-      
 
+      - name: check chart-testing (valid) result
+        run: |
+          echo ${{ steps.chart-testing-valid.outputs.random-test-result }}
+          if [[ ${{ steps.chart-testing-valid.outputs.random-test-result }} == *"successful"* ]]; then
+            echo "successful"
+          else
+            echo "failed"
+            exit 1
+          fi
+        shell: bash
