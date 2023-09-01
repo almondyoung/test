@@ -19,11 +19,13 @@ runs:
         echo $pwd
         cd ./.github/actions/charttest
         go mod tidy
-        go build -a -o chart-valid charttest.go
+        go build -a -o ../../../chart-valid charttest.go
+        echo $(ls ../../../)
       shell: bash
 
     - name: chart valid
       run: |
+        echo $(ls -R)
         chmod +x ./chart-valid
         ./chart-valid -chart-dirs=${{ inputs.chart-dirs }}
       shell: bash
