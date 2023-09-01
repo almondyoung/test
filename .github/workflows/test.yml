@@ -67,7 +67,7 @@ jobs:
       - uses: actions/github-script@v6
         name: commit
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN }}
           script: |
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
