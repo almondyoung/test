@@ -16,7 +16,7 @@ runs:
     - name: build chart-valid
       run: |
         echo ${{ inputs.chart-dirs }}
-        echo $pwd
+        pwd
         cd ./.github/actions/charttest
         go mod tidy
         go build -a -o ../../../chart-valid charttest.go
@@ -26,9 +26,10 @@ runs:
 
     - name: chart valid
       run: |
-        echo $pwd
+        pwd
         echo $(ls -R)
         echo $(ls -lrh ./chart-valid)
         echo ${{ inputs.chart-dirs }}
         result=$(./chart-valid -chart-dirs=${{ inputs.chart-dirs }})
+        echo $result
       shell: bash

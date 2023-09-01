@@ -51,7 +51,7 @@ func main() {
 		err := validateChartFolder(dir)
 		if err != nil {
 			fmt.Printf("Validation failed for folder '%s': %v\n", dir, err)
-			os.Exit(1)
+			return
 		}
 	}
 
