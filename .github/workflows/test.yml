@@ -37,6 +37,7 @@ jobs:
           echo $changed
           if [[ -n "$changed" ]]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
+            $changed=$(echo $changed | tr ' ' ',')
             echo CHANGED_FILES=$changed >> "$GITHUB_OUTPUT"
           fi
 
@@ -49,6 +50,6 @@ jobs:
       - name: Run chart-testing (valid)
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          echo "changed files:${{ steps.list-changed.outputs.changed }}"
+          echo "changed:${{ steps.list-changed.outputs.changed }}"
           echo "changed files:${{ steps.list-changed.outputs.CHANGED_FILES }}"
 
