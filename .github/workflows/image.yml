@@ -1,0 +1,20 @@
+name: build-docker-image
+on:
+  workflow_dispatch:
+#  push:
+#    branches:
+#      - 'dev'
+
+jobs:
+  build-docker-image:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+      - name: build docker image
+        uses: ./.github/actions/docker
+        with:
+          docker_hub_user : ${{ secrets.DOCKERHUB_USER }}
+          docker_hub_token : ${{ secrets.DOCKERHUB_TOKEN }}
+          image_name: test:latest
