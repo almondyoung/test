@@ -22,6 +22,7 @@ type Chart struct {
 	Version    string `yaml:"version"`
 }
 
+// AppConfiguration represents the structure of the app.cfg file
 type AppConfiguration struct {
 	ConfigVersion string      `yaml:"app.cfg.version" json:"app.cfg.version"`
 	Metadata      AppMetaData `yaml:"metadata" json:"metadata"`
@@ -62,7 +63,7 @@ func main() {
 func validateChartFolder(folder string) error {
 	// Check if the folder name is valid
 	if !isValidFolderName(folder) {
-		return fmt.Errorf("invalid folder name: '%s'", folder)
+		return fmt.Errorf("invalid folder name: '%s' must '^[a-z0-9]{1,30}$'", folder)
 	}
 
 	if !dirExists(folder) {
@@ -86,8 +87,8 @@ func validateChartFolder(folder string) error {
 	}
 
 	// Check if Chart.yaml fields are valid
-	if !isValidChartFields(chart) {
-		return fmt.Errorf("invalid fields in Chart.yaml in folder '%s'", folder)
+	if err := isValidChartFields(chart); err != nil {
+		return err
 	}
 
 	// Check if values.yaml file exists
@@ -119,8 +120,8 @@ func validateChartFolder(folder string) error {
 	}
 
 	// Check if metadata fields in app.cfg are valid
-	if !isValidMetadataFields(appConf.Metadata, chart, folder) {
-		return fmt.Errorf("invalid metadata fields in app.cfg in folder '%s'", folder)
+	if err := isValidMetadataFields(appConf.Metadata, chart, folder); err != nil {
+		return err
 	}
 
 	// Validation passed, return nil
@@ -136,21 +137,45 @@ func isValidFolderName(name string) bool {
 // fileExists checks if the file exists
 func fileExists(path string) bool {
 	info, err := os.Stat(path)
-	return err == nil && !info.IsDir()
+	return (err == nil || os.IsExist(err)) && !info.IsDir()
 }
 
 // dirExists checks if the directory exists
 func dirExists(path string) bool {
 	info, err := os.Stat(path)
-	return err == nil && info.IsDir()
+	return (err == nil || os.IsExist(err)) && info.IsDir()
 }
 
 // isValidChartFields checks if the fields in Chart.yaml are valid
-func isValidChartFields(chart Chart) bool {
-	return chart.APIVersion != "" && chart.Name != "" && chart.Version != ""
+func isValidChartFields(chart Chart) error {
+	if chart.APIVersion == "" {
+		return fmt.Errorf("apiVersion field empty in app.cfg in chart '%s'", chart)
+	}
+
+	if chart.Name == "" {
+		return fmt.Errorf("name field empty in app.cfg in chart '%s'", chart)
+	}
+
+	if chart.Version == "" {
+		return fmt.Errorf("version field empty in app.cfg in chart '%s'", chart)
+	}
+
+	return nil
 }
 
 // isValidMetadataFields checks if the metadata fields in app.cfg are valid
-func isValidMetadataFields(metadata AppMetaData, chart Chart, folder string) bool {
-	return metadata.Name == chart.Name && chart.Name == folder && metadata.Version == chart.Version
+func isValidMetadataFields(metadata AppMetaData, chart Chart, folder string) error {
+	if chart.Name == folder {
+		return fmt.Errorf("name %s invalid in Chart.yaml in chart '%s', must same", chart)
+	}
+
+	if metadata.Name == folder {
+		return fmt.Errorf("metadata.name %s invalid in app.cfg in chart '%s', must same", chart)
+	}
+
+	if metadata.Version != chart.Version {
+		return fmt.Errorf("version in app.cfg %s, version in Chart.yaml %s in chart '%s', must same", metadata.Version, chart.Version, chart)
+	}
+
+	return nil
 }

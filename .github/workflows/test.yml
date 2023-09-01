@@ -47,14 +47,43 @@ jobs:
 #          ct lint --chart-dirs ./ --check-version-increment=false --target-branch ${{ github.event.repository.default_branch }}
 #          echo "changed files:${{ steps.list-changed.outputs.changed }}"
       - name: build chart-testing (valid)
+        id: chart-testing-valid
         if: steps.list-changed.outputs.changed == 'true'
         uses: ./.github/actions/charttest
         with:
           chart-dirs: ${{ steps.list-changed.outputs.CHANGED_FILES }}
+
+      - name: check chart-testing (valid) result
+        run: |
+          echo ${{ steps.chart-testing-valid.outputs.random-test-result }}
+          if [[ ${{ steps.chart-testing-valid.outputs.random-test-result }} == *"successful"* ]]; then
+            echo "successful"
+          else
+            echo "failed"
+            exit 1
+        shell: bash
 
       - name: Run chart-testing (valid)
         if: steps.list-changed.outputs.changed == 'true'
         run: |
           echo "changed:${{ steps.list-changed.outputs.changed }}"
           echo "changed files:${{ steps.list-changed.outputs.CHANGED_FILES }}"
+
+      - name: View context attributes
+        uses: actions/github-script@v6
+        with:
+          script: console.log(context)
+
+      - uses: actions/github-script@v6
+        name: commit
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "${{ steps.chart-testing-valid.outputs.random-test-result }}"
+            })
+      
 
