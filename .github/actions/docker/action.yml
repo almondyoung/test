@@ -20,7 +20,6 @@ runs:
         cat password.txt | docker login --username ${{ inputs.docker_hub_user }} --password-stdin
         echo $pwd
         echo $DOCKER_HUB_TOKEN
-        password.txt
       shell: bash
     - name: build image
       run: |
