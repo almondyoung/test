@@ -37,7 +37,7 @@ jobs:
           echo $changed
           if [[ -n "$changed" ]]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "CHANGED_FILES=$changed" >> "$GITHUB_OUTPUT"
+            echo CHANGED_FILES=$changed >> "$GITHUB_OUTPUT"
           fi
 
 #      - name: Run chart-testing (lint)
