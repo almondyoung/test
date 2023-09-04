@@ -86,7 +86,7 @@ jobs:
       - name: check chart-testing (valid) result
         run: |
           echo ${{ steps.chart-testing-valid.outputs.test-result }}
-          if [ ${{ steps.chart-testing-valid.outputs.test-result }} == *"successful"* ]; then
+          if [[ "${{ steps.chart-testing-valid.outputs.test-result" }} == *"successful"* ]]; then
             echo "successful"
           else
             echo "failed"
