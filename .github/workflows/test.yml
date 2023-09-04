@@ -59,6 +59,7 @@ jobs:
           echo "changed:${{ steps.list-changed.outputs.changed }}"
           echo "changed files:${{ steps.list-changed.outputs.CHANGED_FILES }}"
           echo ${{ steps.chart-testing-valid.outputs.test-result }}
+          
 
       - name: View context attributes
         uses: actions/github-script@v6
@@ -83,8 +84,19 @@ jobs:
               body: comment
             })
 
+      - name: check chart-testing (valid) result
+        id: check-valid
+        run: |
+          echo ${{ steps.chart-testing-valid.outputs.test-result }}
+          if [[ "${{ steps.chart-testing-valid.outputs.test-result }}" == *"successful"* ]]; then
+            echo "success=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "success=false" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
       - name: Convert PR to Draft
-        if: "${{ steps.chart-testing-valid.outputs.test-result }}" == *"successful"*
+        if: steps.check-valid.outputs.success == 'true'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GH_TOKEN }}
