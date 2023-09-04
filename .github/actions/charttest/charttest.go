@@ -42,10 +42,18 @@ type AppMetaData struct {
 
 func init() {
 	flag.StringVar(&changedCharts, "chart-dirs", "", "comma-separated list of chart directories")
+	flag.Parse()
+}
+
+func usage() {
+	flag.Usage()
+	os.Exit(-1)
 }
 
 func main() {
-	flag.Parse()
+	if len(os.Args) < 2 {
+		usage()
+	}
 
 	dirs := strings.Split(changedCharts, ",")
 	for _, dir := range dirs {

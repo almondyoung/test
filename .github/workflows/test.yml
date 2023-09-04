@@ -58,6 +58,7 @@ jobs:
         run: |
           echo "changed:${{ steps.list-changed.outputs.changed }}"
           echo "changed files:${{ steps.list-changed.outputs.CHANGED_FILES }}"
+          echo ${{ steps.chart-testing-valid.outputs.random-test-result }}
 
       - name: View context attributes
         uses: actions/github-script@v6
@@ -69,11 +70,17 @@ jobs:
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           script: |
+            const comment = `
+              Script Output:
+              \`\`\`
+              ${{ steps.chart-testing-valid.outputs.random-test-result }}
+              \`\`\`
+            `;
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "${{ steps.chart-testing-valid.outputs.random-test-result }}"
+              body: comment
             })
 
       - name: check chart-testing (valid) result
