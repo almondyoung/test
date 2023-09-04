@@ -101,35 +101,28 @@ jobs:
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           script: |
-            const { request } = require('@octokit/request');
-      
-            async function run() {
-              const query = `mutation ConvertToDraft($pullRequestId: ID!) {
-                updatePullRequest(input: {pullRequestId: $pullRequestId, baseRefName: null}) {
-                   pullRequest {
-                   id
-                   isDraft
-                  }
+            const query = `mutation ConvertToDraft($pullRequestId: ID!) {
+              updatePullRequest(input: {pullRequestId: $pullRequestId, baseRefName: null}) {
+                 pullRequest {
+                 id
+                 isDraft
                 }
-              }`;
-              
-              const variables = {
-                pullRequestId: ${{ github.event.pull_request.node_id }}
-              };
-              
-              const response = await request("POST /graphql", {
-                headers: {
-                  authorization: `Bearer ${process.env.GITHUB_TOKEN}`
-                },
-                query,
-                variables
-              });
-              
-              console.log(response);
-            }
-      
-            run();
+              }
+            }`;
             
+            const variables = {
+              pullRequestId: ${{ github.event.pull_request.node_id }}
+            };
+
+#              const response = await request("POST /graphql", {
+#                headers: {
+#                  authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+#                },
+#                query,
+#                variables
+#              });
+            const response = await github.graphql(query, variables)
+            console.log(response);
 
       - name: check chart-testing (valid) result
         run: |
