@@ -102,7 +102,6 @@ jobs:
           github-token: ${{ secrets.GH_TOKEN }}
           script: |
             const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-    
             await octokit.pulls.update({
               owner: github.context.repo.owner,
               repo: github.context.repo.repo,
