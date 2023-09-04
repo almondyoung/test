@@ -173,16 +173,16 @@ func isValidChartFields(chart Chart) error {
 
 // isValidMetadataFields checks if the metadata fields in app.cfg are valid
 func isValidMetadataFields(metadata AppMetaData, chart Chart, folder string) error {
-	if chart.Name == folder {
-		return fmt.Errorf("name %s invalid in Chart.yaml in chart '%s', must same", chart)
+	if chart.Name != folder {
+		return fmt.Errorf("name %s invalid in Chart.yaml in chart '%s', must same", chart.Name, folder)
 	}
 
-	if metadata.Name == folder {
-		return fmt.Errorf("metadata.name %s invalid in app.cfg in chart '%s', must same", chart)
+	if metadata.Name != folder {
+		return fmt.Errorf("metadata.name %s invalid in app.cfg in chart '%s', must same", metadata.Name, folder)
 	}
 
 	if metadata.Version != chart.Version {
-		return fmt.Errorf("version in app.cfg %s, version in Chart.yaml %s in chart '%s', must same", metadata.Version, chart.Version, chart)
+		return fmt.Errorf("version in app.cfg %s, version in Chart.yaml %s in chart '%s', must same", metadata.Version, chart.Version, folder)
 	}
 
 	return nil

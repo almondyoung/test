@@ -71,7 +71,7 @@ jobs:
           github-token: ${{ secrets.GH_TOKEN }}
           script: |
             const comment = `
-              Script Output:
+              test valid output:
               \`\`\`
               ${{ steps.chart-testing-valid.outputs.test-result }}
               \`\`\`
@@ -86,7 +86,7 @@ jobs:
       - name: check chart-testing (valid) result
         run: |
           echo ${{ steps.chart-testing-valid.outputs.test-result }}
-          if [[ ${{ steps.chart-testing-valid.outputs.test-result }} == *"successful"* ]]; then
+          if [ ${{ steps.chart-testing-valid.outputs.test-result }} == *"successful"* ]; then
             echo "successful"
           else
             echo "failed"
