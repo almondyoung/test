@@ -114,13 +114,6 @@ jobs:
               pullRequestId: ${{ github.event.pull_request.node_id }}
             };
 
-#              const response = await request("POST /graphql", {
-#                headers: {
-#                  authorization: `Bearer ${process.env.GITHUB_TOKEN}`
-#                },
-#                query,
-#                variables
-#              });
             const response = await github.graphql(query, variables)
             console.log(response);
 
