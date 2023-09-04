@@ -101,13 +101,19 @@ jobs:
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           script: |
-            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-            await octokit.pulls.update({
+            const { Octokit } = require("@octokit/core");
+      
+            async function run() {
+            const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+            
+            await octokit.request("PATCH /repos/{owner}/{repo}/pulls/{pull_number}", {
               owner: github.context.repo.owner,
               repo: github.context.repo.repo,
               pull_number: github.context.issue.number,
               draft: true
-            })
+            });
+          }
+          run();
           
 
       - name: check chart-testing (valid) result
