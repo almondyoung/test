@@ -83,6 +83,19 @@ jobs:
               body: comment
             })
 
+      - name: Convert PR to Draft
+        if: "${{ steps.chart-testing-valid.outputs.test-result }}" == *"successful"*
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            github.pulls.update({
+              pull_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              draft: true
+            });
+
       - name: check chart-testing (valid) result
         run: |
           echo ${{ steps.chart-testing-valid.outputs.test-result }}
