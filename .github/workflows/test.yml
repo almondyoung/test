@@ -58,7 +58,7 @@ jobs:
         run: |
           echo "changed:${{ steps.list-changed.outputs.changed }}"
           echo "changed files:${{ steps.list-changed.outputs.CHANGED_FILES }}"
-          echo ${{ steps.chart-testing-valid.outputs.random-test-result }}
+          echo ${{ steps.chart-testing-valid.outputs.test-result }}
 
       - name: View context attributes
         uses: actions/github-script@v6
@@ -73,7 +73,7 @@ jobs:
             const comment = `
               Script Output:
               \`\`\`
-              ${{ steps.chart-testing-valid.outputs.random-test-result }}
+              ${{ steps.chart-testing-valid.outputs.test-result }}
               \`\`\`
             `;
             await github.rest.issues.createComment({
@@ -85,8 +85,8 @@ jobs:
 
       - name: check chart-testing (valid) result
         run: |
-          echo ${{ steps.chart-testing-valid.outputs.random-test-result }}
-          if [[ ${{ steps.chart-testing-valid.outputs.random-test-result }} == *"successful"* ]]; then
+          echo ${{ steps.chart-testing-valid.outputs.test-result }}
+          if [[ ${{ steps.chart-testing-valid.outputs.test-result }} == *"successful"* ]]; then
             echo "successful"
           else
             echo "failed"
