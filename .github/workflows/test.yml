@@ -96,7 +96,7 @@ jobs:
         shell: bash
 
       - name: Convert PR to Draft
-        if: steps.check-valid.outputs.success == 'true'
+        if: steps.check-valid.outputs.success != 'true'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GH_TOKEN }}
