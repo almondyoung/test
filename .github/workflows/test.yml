@@ -98,10 +98,10 @@ jobs:
       - name: Convert PR to Draft
         if: steps.check-valid.outputs.success != 'true'
         run: |
-          curl -X PUT \
+          curl -X PATCH \
             -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            -d '{"state": "open", "draft": true}' \
+            -d '{"draft": true}' \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
 
       - name: Update PR status and send message
@@ -109,7 +109,7 @@ jobs:
         run: |
           curl -X PATCH \
             -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
+            -H "Accept: application/vnd.github.raw+json" \
             -d '{"state": "open", "draft": false}' \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
           
