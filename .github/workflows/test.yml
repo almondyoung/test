@@ -97,7 +97,6 @@ jobs:
 
       - name: Convert PR to Draft
         if: steps.check-valid.outputs.success != 'true'
-        uses: actions/github-script@v6
         run: |
           curl -X PATCH \
             -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
@@ -108,14 +107,12 @@ jobs:
       - name: Update PR status and send message
         if: ${{ env.CHECK_PASSED == 'true' }}
         run: |
-          # 将 PR 状态更改为 "ready for review"
           curl -X PATCH \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             -d '{"state": "open", "draft": false}' \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
           
-          # 发送消息到飞书群
           curl -X POST \
             -H "Content-Type: application/json" \
             -d '{"msg_type": "text", "content": {"text": "PR is ready for review: ${{ github.event.pull_request.html_url }}"}}' \
