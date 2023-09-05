@@ -1,0 +1,41 @@
+name: 'chart testing (valid)'
+description: 'chart testing (valid)'
+inputs:
+  chart-dirs:  # id of input
+    description: 'comma-separated list of chart directories'
+    required: true
+outputs:
+  test-result:
+    description: 'chart testing (valid) result'
+    value: ${{ steps.chart-valid.outputs.test-valid-result }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: set op golang
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21.0'
+
+    - name: build chart-valid
+      run: |
+        echo ${{ inputs.chart-dirs }}
+        pwd
+        cd ./.github/actions/charttest
+        go mod tidy
+        go build -a -o ../../../chart-valid charttest.go
+        echo $(ls ../../../)
+        chmod +x ../../../chart-valid
+      shell: bash
+
+    - name: chart valid
+      id: chart-valid
+      run: |
+        pwd
+        echo $(ls -R)
+        echo $(ls -lrh ./chart-valid)
+        echo ${{ inputs.chart-dirs }}
+        result=$(./chart-valid -chart-dirs=${{ inputs.chart-dirs }})
+        echo $result
+        echo test-valid-result=$result >> $GITHUB_OUTPUT
+      shell: bash
