@@ -98,20 +98,35 @@ jobs:
       - name: Convert PR to Draft
         if: steps.check-valid.outputs.success != 'true'
         run: |
-          curl -X PATCH \
+          curl -L \
+            -X PATCH \
             -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
+            -H "Accept: application/vnd.github.raw+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
             -d '{"draft": true}' \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
+          
+          curl -X POST \
+              -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -d '{"labels": ["needs-work"]}' \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
 
       - name: Update PR status and send message
         if: steps.check-valid.outputs.success == 'true'
         run: |
           curl -X PATCH \
             -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
-            -H "Accept: application/vnd.github.raw+json" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
             -d '{"state": "open", "draft": false}' \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
+          
+          curl -X POST \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -d '{"labels": ["ready-for-review"]}' \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
           
           curl -X POST \
             -H "Content-Type: application/json" \
