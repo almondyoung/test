@@ -123,7 +123,7 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
           
           curl -X POST \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
               -d '{"labels": ["ready-for-review"]}' \
               "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
