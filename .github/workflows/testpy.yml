@@ -59,7 +59,7 @@ jobs:
       - uses: actions/github-script@v6
         name: commit
         with:
-          github-token: ${{ secrets.GH_TOKEN2 }}
+          github-token: ${{ env.GH_TOKEN2 }}
           script: |
             const comment = `
               check valid output:
@@ -88,12 +88,12 @@ jobs:
       - name: remove labels
         run: |
           curl -X DELETE \
-           -H "Authorization: Bearer ${{ secrets.GH_TOKEN2 }}" \
+           -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
            -H "Accept: application/vnd.github.v3+json" \
            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/ready-for-review"
           
           curl -X DELETE \
-           -H "Authorization: Bearer ${{ secrets.GH_TOKEN2 }}" \
+           -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
            -H "Accept: application/vnd.github.v3+json" \
            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/needs-work"
         shell: bash
@@ -102,7 +102,7 @@ jobs:
         if: steps.check-valid.outputs.success != 'true'
         run: |
           curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GH_TOKEN2 }}" \
+            -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
             -H "Accept: application/vnd.github.v3+json" \
             -d '{"labels": ["needs-work"]}' \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
@@ -111,7 +111,7 @@ jobs:
         if: steps.check-valid.outputs.success == 'true'
         run: |
           curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GH_TOKEN2 }}" \
+            -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
             -H "Accept: application/vnd.github.v3+json" \
             -d '{"labels": ["ready-for-review"]}' \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
