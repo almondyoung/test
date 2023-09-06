@@ -24,7 +24,7 @@ runs:
         echo $(ls -R)
         echo $(ls -lrh ./chart-valid)
         echo ${{ inputs.chart-dirs }}
-        result=$(python3 chartvalid.py -chart-dirs=${{ inputs.chart-dirs }})
+        result=$(python3 ./.github/actions/chartvalid/chartvalid.py -chart-dirs=${{ inputs.chart-dirs }})
         echo $result
         echo test-valid-result=$result >> $GITHUB_OUTPUT
       shell: bash
