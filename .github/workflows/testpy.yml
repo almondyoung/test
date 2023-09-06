@@ -107,19 +107,20 @@ jobs:
 #            -d '{"labels": ["needs-work"]}' \
 #            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
 #
-#      - name: Update PR status and send message
-#        if: steps.check-valid.outputs.success == 'true'
-#        run: |
+      - name: send message
+        if: steps.check-valid.outputs.success == 'true'
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"msg_type": "text", "content": {"text": "PR is ready for review: ${{ github.event.pull_request.html_url }}"}}' \
+            "https://open.feishu.cn/open-apis/bot/v2/hook/c7f4cc39-6dcb-4289-8191-d449b38a298c"
 #          curl -X POST \
 #            -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
 #            -H "Accept: application/vnd.github.v3+json" \
 #            -d '{"labels": ["ready-for-review"]}' \
 #            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
-#
-#          curl -X POST \
-#            -H "Content-Type: application/json" \
-#            -d '{"msg_type": "text", "content": {"text": "PR is ready for review: ${{ github.event.pull_request.html_url }}"}}' \
-#            "https://open.feishu.cn/open-apis/bot/v2/hook/c7f4cc39-6dcb-4289-8191-d449b38a298c"
+
+
 
       - name: check chart-testing (valid) result
         run: |
