@@ -1,0 +1,29 @@
+name: 'chart testing (valid) py'
+description: 'chart testing (valid)  py'
+inputs:
+  chart-dirs:  # id of input
+    description: 'comma-separated list of chart directories'
+    required: true
+outputs:
+  test-result:
+    description: 'chart testing (valid) result'
+    value: ${{ steps.chart-valid.outputs.test-valid-result }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: install pyyaml
+      run: |
+        pip3 install pyyaml
+      shell: bash
+
+    - name: chart valid
+      id: chart-valid
+      run: |
+        pwd
+        echo $(ls -R)
+        echo ${{ inputs.chart-dirs }}
+        result=$(python3 ./.github/actions/chartvalid/chartvalid.py -chart-dirs=${{ inputs.chart-dirs }})
+        echo $result
+        echo test-valid-result=$result >> $GITHUB_OUTPUT
+      shell: bash
