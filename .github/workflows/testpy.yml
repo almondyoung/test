@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "changed:${{ steps.list-changed.outputs.changed }}"
           echo "changed files:${{ steps.list-changed.outputs.CHANGED_FILES }}"
-          echo ${{ steps.chart-testing-valid.outputs.test-result }}
+          echo "${{ steps.chart-testing-valid.outputs.test-result }}"
           
       - uses: actions/github-script@v6
         name: commit

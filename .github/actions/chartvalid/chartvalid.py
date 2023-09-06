@@ -1,4 +1,5 @@
 import argparse
+# import logging
 import os
 import re
 import yaml
@@ -12,22 +13,23 @@ class Chart:
 
 
 class AppConfiguration:
-    def __init__(self, config_version, metadata):
+    def __init__(self, config_version, metadata, entrance, permission, spec):
         self.config_version = config_version
         self.metadata = metadata
+        self.entrance = entrance
+        self.permission = permission
+        self.spec = spec
 
 
 class AppMetaData:
-    def __init__(self, name, icon, description, app_id, title, version, categories, rating, target):
+    def __init__(self, name, icon, description, appid, title, version, categories):
         self.name = name
         self.icon = icon
         self.description = description
-        self.app_id = app_id
+        self.appid = appid
         self.title = title
         self.version = version
         self.categories = categories
-        self.rating = rating
-        self.target = target
 
 
 def validate_chart_folder(folder):
@@ -78,12 +80,19 @@ def validate_chart_folder(folder):
     app_cfg_data = yaml.safe_load(app_cfg_content)
     app_conf = AppConfiguration(
         config_version=app_cfg_data.get("app.cfg.version"),
-        metadata=AppMetaData(**app_cfg_data.get("metadata"))
+        metadata=AppMetaData(**app_cfg_data.get("metadata")),
+        entrance=app_cfg_data.get("entrance"),
+        permission=app_cfg_data.get("permission"),
+        spec=app_cfg_data.get("spec")
     )
 
     # Check if metadata fields in app.cfg are valid
-    if not is_valid_metadata_fields(app_conf.metadata, chart, folder):
-        raise ValueError(f"Invalid metadata fields in app.cfg in folder: '{folder}'")
+    error_message = is_valid_metadata_fields(app_conf.metadata, chart, folder)
+    if error_message:
+        raise ValueError(f"Invalid metadata fields in app.cfg in folder: '{folder}'. {error_message}")
+
+    # if not is_valid_metadata_fields(app_conf.metadata, chart, folder):
+    #     raise ValueError(f"Invalid metadata fields in app.cfg in folder: '{folder}'")
 
     # Validation passed
     return True
@@ -103,15 +112,27 @@ def is_valid_chart_fields(chart):
         return False
     return True
 
-
 def is_valid_metadata_fields(metadata, chart, folder):
     if chart.name != folder:
-        return False
+        return f"name {chart.name} invalid in Chart.yaml in chart '{folder}', must be same"
+
     if metadata.name != folder:
-        return False
+        return f"metadata.name {metadata.name} invalid in app.cfg in chart '{folder}', must be same"
+
     if metadata.version != chart.version:
-        return False
-    return True
+        return f"version in app.cfg {metadata.version}, version in Chart.yaml {chart.version} in chart '{folder}', must be same"
+
+    return None
+
+
+# def is_valid_metadata_fields(metadata, chart, folder):
+#     if chart.name != folder:
+#         return False
+#     if metadata.name != folder:
+#         return False
+#     if metadata.version != chart.version:
+#         return False
+#     return True
 
 
 def main():
@@ -128,6 +149,7 @@ def main():
         try:
             validate_chart_folder(dir)
         except Exception as e:
+            # logging.exception(e)
             print(f"Validation failed for folder '{dir}': {str(e)}")
             return
 

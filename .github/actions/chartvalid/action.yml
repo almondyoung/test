@@ -1,5 +1,5 @@
-name: 'chart testing (valid)'
-description: 'chart testing (valid)'
+name: 'chart testing (valid) py'
+description: 'chart testing (valid)  py'
 inputs:
   chart-dirs:  # id of input
     description: 'comma-separated list of chart directories'
@@ -22,7 +22,6 @@ runs:
       run: |
         pwd
         echo $(ls -R)
-        echo $(ls -lrh ./chart-valid)
         echo ${{ inputs.chart-dirs }}
         result=$(python3 ./.github/actions/chartvalid/chartvalid.py -chart-dirs=${{ inputs.chart-dirs }})
         echo $result
