@@ -56,23 +56,23 @@ jobs:
           echo "changed files:${{ steps.list-changed.outputs.CHANGED_FILES }}"
           echo "${{ steps.chart-testing-valid.outputs.test-result }}"
           
-      - uses: actions/github-script@v6
-        name: commit
-        with:
-          github-token: ${{ env.GH_TOKEN2 }}
-          script: |
-            const comment = `
-              check valid output:
-              \`\`\`
-              ${{ steps.chart-testing-valid.outputs.test-result }}
-              \`\`\`
-            `;
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            })
+#      - uses: actions/github-script@v6
+#        name: commit
+#        with:
+#          github-token: ${{ env.GH_TOKEN2 }}
+#          script: |
+#            const comment = `
+#              check valid output:
+#              \`\`\`
+#              ${{ steps.chart-testing-valid.outputs.test-result }}
+#              \`\`\`
+#            `;
+#            await github.rest.issues.createComment({
+#              issue_number: context.issue.number,
+#              owner: context.repo.owner,
+#              repo: context.repo.repo,
+#              body: comment
+#            })
 
       - name: check chart-testing (valid) result
         id: check-valid
@@ -85,41 +85,41 @@ jobs:
           fi
         shell: bash
 
-      - name: remove labels
-        run: |
-          curl -X DELETE \
-           -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
-           -H "Accept: application/vnd.github.v3+json" \
-           "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/ready-for-review"
-          
-          curl -X DELETE \
-           -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
-           -H "Accept: application/vnd.github.v3+json" \
-           "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/needs-work"
-        shell: bash
-
-      - name: Convert PR to Draft
-        if: steps.check-valid.outputs.success != 'true'
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d '{"labels": ["needs-work"]}' \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
-
-      - name: Update PR status and send message
-        if: steps.check-valid.outputs.success == 'true'
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d '{"labels": ["ready-for-review"]}' \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
-          
-          curl -X POST \
-            -H "Content-Type: application/json" \
-            -d '{"msg_type": "text", "content": {"text": "PR is ready for review: ${{ github.event.pull_request.html_url }}"}}' \
-            "https://open.feishu.cn/open-apis/bot/v2/hook/c7f4cc39-6dcb-4289-8191-d449b38a298c"
+#      - name: remove labels
+#        run: |
+#          curl -X DELETE \
+#           -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
+#           -H "Accept: application/vnd.github.v3+json" \
+#           "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/ready-for-review"
+#
+#          curl -X DELETE \
+#           -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
+#           -H "Accept: application/vnd.github.v3+json" \
+#           "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/needs-work"
+#        shell: bash
+#
+#      - name: Convert PR to Draft
+#        if: steps.check-valid.outputs.success != 'true'
+#        run: |
+#          curl -X POST \
+#            -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
+#            -H "Accept: application/vnd.github.v3+json" \
+#            -d '{"labels": ["needs-work"]}' \
+#            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
+#
+#      - name: Update PR status and send message
+#        if: steps.check-valid.outputs.success == 'true'
+#        run: |
+#          curl -X POST \
+#            -H "Authorization: Bearer ${{ env.GH_TOKEN2 }}" \
+#            -H "Accept: application/vnd.github.v3+json" \
+#            -d '{"labels": ["ready-for-review"]}' \
+#            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
+#
+#          curl -X POST \
+#            -H "Content-Type: application/json" \
+#            -d '{"msg_type": "text", "content": {"text": "PR is ready for review: ${{ github.event.pull_request.html_url }}"}}' \
+#            "https://open.feishu.cn/open-apis/bot/v2/hook/c7f4cc39-6dcb-4289-8191-d449b38a298c"
 
       - name: check chart-testing (valid) result
         run: |
