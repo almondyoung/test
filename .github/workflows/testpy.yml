@@ -45,7 +45,7 @@ jobs:
       - name: build chart-testing (valid)
         id: chart-testing-valid
         if: steps.list-changed.outputs.changed == 'true'
-        uses: ./.github/actions/chartvalid
+        uses: almondyoung/chart-valid@master
         with:
           chart-dirs: ${{ steps.list-changed.outputs.CHANGED_FILES }}
 
