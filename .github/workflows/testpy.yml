@@ -1,6 +1,7 @@
 name: Lint and Test Charts by py
 
 on:
+  workflow_dispatch:
 #  pull_request:
 #    branches: [ "main" ]
 
